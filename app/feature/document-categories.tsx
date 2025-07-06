@@ -6,6 +6,9 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Modal,
+  Alert,
+  Share,
 } from 'react-native';
 import {
   ArrowLeft,
@@ -16,6 +19,11 @@ import {
   File,
   FileText,
   StickyNote,
+  MoveVertical as MoreVertical,
+  Eye,
+  Share as ShareIcon,
+  Trash2,
+  Edit3,
 } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -41,6 +49,8 @@ interface Category {
 export default function DocumentCategoriesScreen() {
   const { category } = useLocalSearchParams<{ category?: string }>();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
   // Sample documents data with dummy PDFs and notes
   const documents: Document[] = [
@@ -252,6 +262,75 @@ export default function DocumentCategoriesScreen() {
     }
   };
 
+  const handleDocumentOptions = (document: Document) => {
+    setSelectedDocument(document);
+    setShowOptionsModal(true);
+  };
+
+  const handleViewDocument = () => {
+    setShowOptionsModal(false);
+    if (selectedDocument) {
+      handleDocumentPress(selectedDocument);
+    }
+  };
+
+  const handleShareDocument = async () => {
+    setShowOptionsModal(false);
+    if (selectedDocument) {
+      try {
+        if (selectedDocument.category === 'notes') {
+          await Share.share({
+            message: `${selectedDocument.name}\n\n${selectedDocument.content}`,
+            title: selectedDocument.name,
+          });
+        } else {
+          await Share.share({
+            message: `Sharing document: ${selectedDocument.name}`,
+            title: selectedDocument.name,
+          });
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Failed to share document');
+      }
+    }
+  };
+
+  const handleDeleteDocument = () => {
+    if (selectedDocument) {
+      Alert.alert(
+        'Delete Item',
+        `Are you sure you want to delete "${selectedDocument.name}"?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => {
+              setShowOptionsModal(false);
+              setSelectedDocument(null);
+              Alert.alert('Success', 'Item deleted successfully!');
+            },
+          },
+        ]
+      );
+    }
+  };
+
+  const handleEditNote = () => {
+    setShowOptionsModal(false);
+    if (selectedDocument && selectedDocument.category === 'notes') {
+      router.push({
+        pathname: '/feature/note-viewer',
+        params: { 
+          noteId: selectedDocument.id,
+          title: selectedDocument.name,
+          content: selectedDocument.content || '',
+          date: selectedDocument.uploadDate
+        }
+      });
+    }
+  };
+
   const filteredDocuments = selectedCategory
     ? documents.filter(doc => doc.category === selectedCategory)
     : [];
@@ -296,6 +375,12 @@ export default function DocumentCategoriesScreen() {
           </Text>
         )}
       </View>
+      <TouchableOpacity
+        style={styles.optionsButton}
+        onPress={() => handleDocumentOptions(item)}
+      >
+        <MoreVertical size={20} color="#6B7280" />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
@@ -339,6 +424,52 @@ export default function DocumentCategoriesScreen() {
             </View>
           )}
         </ScrollView>
+
+        {/* Options Modal */}
+        <Modal
+          visible={showOptionsModal}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowOptionsModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.optionsModal}>
+              <Text style={styles.modalTitle}>Options</Text>
+              <Text style={styles.modalSubtitle}>{selectedDocument?.name}</Text>
+              
+              <TouchableOpacity style={styles.optionItem} onPress={handleViewDocument}>
+                <Eye size={20} color="#3B82F6" />
+                <Text style={styles.optionText}>
+                  {selectedDocument?.category === 'notes' ? 'View Note' : 'View Document'}
+                </Text>
+              </TouchableOpacity>
+
+              {selectedDocument?.category === 'notes' && (
+                <TouchableOpacity style={styles.optionItem} onPress={handleEditNote}>
+                  <Edit3 size={20} color="#8B5CF6" />
+                  <Text style={styles.optionText}>Edit Note</Text>
+                </TouchableOpacity>
+              )}
+              
+              <TouchableOpacity style={styles.optionItem} onPress={handleShareDocument}>
+                <ShareIcon size={20} color="#10B981" />
+                <Text style={styles.optionText}>Share</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.optionItem} onPress={handleDeleteDocument}>
+                <Trash2 size={20} color="#EF4444" />
+                <Text style={[styles.optionText, { color: '#EF4444' }]}>Delete</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowOptionsModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -567,6 +698,10 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 4,
   },
+  optionsButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -625,5 +760,57 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#6B7280',
     textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  optionsModal: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 300,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter-SemiBold',
+    color: '#1F2937',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  optionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  optionText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+    color: '#1F2937',
+    marginLeft: 12,
+  },
+  cancelButton: {
+    marginTop: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+    color: '#6B7280',
   },
 });
