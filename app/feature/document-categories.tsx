@@ -10,21 +10,7 @@ import {
   Alert,
   Share,
 } from 'react-native';
-import {
-  ArrowLeft,
-  GraduationCap,
-  Award,
-  Shield,
-  Archive,
-  File,
-  FileText,
-  StickyNote,
-  MoveVertical as MoreVertical,
-  Eye,
-  Share as ShareIcon,
-  Trash2,
-  Edit3,
-} from 'lucide-react-native';
+import { ArrowLeft, GraduationCap, Award, Shield, Archive, File, FileText, StickyNote, MoveVertical as MoreVertical, Eye, Share as ShareIcon, Trash2, CreditCard as Edit3 } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 interface Document {
