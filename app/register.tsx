@@ -86,8 +86,8 @@ export default function RegisterScreen() {
                 onChangeText={setName}
                 autoCapitalize="words"
                 autoComplete="name"
-                selectionColor="transparent"
-                cursorColor="transparent"
+                selectionColor="rgba(0,0,0,0)"
+                caretHidden={true}
               />
             </View>
           </View>
@@ -104,8 +104,8 @@ export default function RegisterScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
-                selectionColor="transparent"
-                cursorColor="transparent"
+                selectionColor="rgba(0,0,0,0)"
+                caretHidden={true}
               />
             </View>
           </View>
@@ -121,8 +121,8 @@ export default function RegisterScreen() {
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
                 autoComplete="password"
-                selectionColor="transparent"
-                cursorColor="transparent"
+                selectionColor="rgba(0,0,0,0)"
+                caretHidden={true}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
@@ -148,8 +148,8 @@ export default function RegisterScreen() {
                 onChangeText={setConfirmPassword}
                 secureTextEntry={!showConfirmPassword}
                 autoComplete="password"
-                selectionColor="transparent"
-                cursorColor="transparent"
+                selectionColor="rgba(0,0,0,0)"
+                caretHidden={true}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}

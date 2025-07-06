@@ -10,7 +10,7 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import { ArrowLeft, Search, Upload, MoveVertical as MoreVertical, Eye, Trash2, Share, FolderOpen, FileText, Plus, File, GraduationCap, Award, Shield, Archive } from 'lucide-react-native';
+import { ArrowLeft, Search, Upload, MoveVertical as MoreVertical, Eye, Trash2, Share, FolderOpen, FileText, Plus, File } from 'lucide-react-native';
 import { router } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 
@@ -36,7 +36,6 @@ export default function DocumentVaultScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
-  const [showPDFViewer, setShowPDFViewer] = useState(false);
   const [showCreateNote, setShowCreateNote] = useState(false);
   const [noteTitle, setNoteTitle] = useState('');
   const [noteContent, setNoteContent] = useState('');
@@ -274,8 +273,8 @@ export default function DocumentVaultScreen() {
               placeholderTextColor="#9CA3AF"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              selectionColor="transparent"
-              cursorColor="transparent"
+              selectionColor="rgba(0,0,0,0)"
+              caretHidden={true}
             />
           </View>
         </View>
@@ -390,8 +389,8 @@ export default function DocumentVaultScreen() {
                 placeholderTextColor="#9CA3AF"
                 value={noteTitle}
                 onChangeText={setNoteTitle}
-                selectionColor="transparent"
-                cursorColor="transparent"
+                selectionColor="rgba(0,0,0,0)"
+                caretHidden={true}
               />
             </View>
             
@@ -406,8 +405,8 @@ export default function DocumentVaultScreen() {
                 multiline={true}
                 numberOfLines={15}
                 textAlignVertical="top"
-                selectionColor="transparent"
-                cursorColor="transparent"
+                selectionColor="rgba(0,0,0,0)"
+                caretHidden={true}
               />
             </View>
           </ScrollView>
