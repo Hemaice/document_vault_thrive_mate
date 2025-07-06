@@ -10,7 +10,7 @@ import {
   Modal,
   Share,
 } from 'react-native';
-import { ArrowLeft, Edit3, Save, Share as ShareIcon, Trash2, MoreVertical } from 'lucide-react-native';
+import { ArrowLeft, CreditCard as Edit3, Save, Share as ShareIcon, Trash2, MoveVertical as MoreVertical } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 export default function NoteViewerScreen() {

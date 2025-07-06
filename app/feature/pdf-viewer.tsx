@@ -9,7 +9,7 @@ import {
   Modal,
   Share,
 } from 'react-native';
-import { ArrowLeft, Eye, Share as ShareIcon, Trash2, Download, MoreVertical } from 'lucide-react-native';
+import { ArrowLeft, Eye, Share as ShareIcon, Trash2, Download, MoveVertical as MoreVertical } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 export default function PDFViewerScreen() {
