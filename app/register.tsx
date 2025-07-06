@@ -87,7 +87,6 @@ export default function RegisterScreen() {
                 autoCapitalize="words"
                 autoComplete="name"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
             </View>
           </View>
@@ -105,7 +104,6 @@ export default function RegisterScreen() {
                 autoCapitalize="none"
                 autoComplete="email"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
             </View>
           </View>
@@ -122,7 +120,6 @@ export default function RegisterScreen() {
                 secureTextEntry={!showPassword}
                 autoComplete="password"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
@@ -149,7 +146,6 @@ export default function RegisterScreen() {
                 secureTextEntry={!showConfirmPassword}
                 autoComplete="password"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}

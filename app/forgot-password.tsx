@@ -139,7 +139,6 @@ export default function ForgotPasswordScreen() {
                 autoCapitalize="none"
                 autoComplete="email"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
             </View>
           </View>

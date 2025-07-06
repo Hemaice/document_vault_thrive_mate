@@ -274,7 +274,6 @@ export default function DocumentVaultScreen() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               selectionColor="rgba(0,0,0,0)"
-              caretHidden={true}
             />
           </View>
         </View>
@@ -390,7 +389,6 @@ export default function DocumentVaultScreen() {
                 value={noteTitle}
                 onChangeText={setNoteTitle}
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
             </View>
             
@@ -406,7 +404,6 @@ export default function DocumentVaultScreen() {
                 numberOfLines={15}
                 textAlignVertical="top"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
             </View>
           </ScrollView>

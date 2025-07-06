@@ -65,7 +65,6 @@ export default function LoginScreen() {
                 autoCapitalize="none"
                 autoComplete="email"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
             </View>
           </View>
@@ -82,7 +81,6 @@ export default function LoginScreen() {
                 secureTextEntry={!showPassword}
                 autoComplete="password"
                 selectionColor="rgba(0,0,0,0)"
-                caretHidden={true}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
