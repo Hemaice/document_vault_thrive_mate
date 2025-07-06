@@ -14,7 +14,8 @@ import {
   Shield,
   Archive,
   File,
-  Search,
+  FileText,
+  StickyNote,
 } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -24,7 +25,8 @@ interface Document {
   type: string;
   size: string;
   uploadDate: string;
-  category: 'academic' | 'certificates' | 'govt-proof' | 'others';
+  category: 'academic' | 'certificates' | 'govt-proof' | 'others' | 'notes';
+  content?: string; // For notes
 }
 
 interface Category {
@@ -40,7 +42,7 @@ export default function DocumentCategoriesScreen() {
   const { category } = useLocalSearchParams<{ category?: string }>();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
 
-  // Sample documents data
+  // Sample documents data with dummy PDFs and notes
   const documents: Document[] = [
     {
       id: '1',
@@ -60,6 +62,14 @@ export default function DocumentCategoriesScreen() {
     },
     {
       id: '3',
+      name: 'Research Paper.pdf',
+      type: 'PDF',
+      size: '3.2 MB',
+      uploadDate: '2024-01-13',
+      category: 'academic',
+    },
+    {
+      id: '4',
       name: 'Course Completion Certificate.pdf',
       type: 'PDF',
       size: '1.2 MB',
@@ -67,7 +77,7 @@ export default function DocumentCategoriesScreen() {
       category: 'certificates',
     },
     {
-      id: '4',
+      id: '5',
       name: 'Professional Certification.pdf',
       type: 'PDF',
       size: '2.1 MB',
@@ -75,7 +85,15 @@ export default function DocumentCategoriesScreen() {
       category: 'certificates',
     },
     {
-      id: '5',
+      id: '6',
+      name: 'AWS Certificate.pdf',
+      type: 'PDF',
+      size: '1.7 MB',
+      uploadDate: '2024-01-11',
+      category: 'certificates',
+    },
+    {
+      id: '7',
       name: 'Passport Copy.pdf',
       type: 'PDF',
       size: '3.2 MB',
@@ -83,7 +101,7 @@ export default function DocumentCategoriesScreen() {
       category: 'govt-proof',
     },
     {
-      id: '6',
+      id: '8',
       name: 'Driver License.pdf',
       type: 'PDF',
       size: '1.5 MB',
@@ -91,12 +109,65 @@ export default function DocumentCategoriesScreen() {
       category: 'govt-proof',
     },
     {
-      id: '7',
+      id: '9',
+      name: 'Birth Certificate.pdf',
+      type: 'PDF',
+      size: '2.0 MB',
+      uploadDate: '2024-01-09',
+      category: 'govt-proof',
+    },
+    {
+      id: '10',
       name: 'Insurance Document.pdf',
       type: 'PDF',
       size: '2.8 MB',
       uploadDate: '2024-01-09',
       category: 'others',
+    },
+    {
+      id: '11',
+      name: 'Bank Statement.pdf',
+      type: 'PDF',
+      size: '1.9 MB',
+      uploadDate: '2024-01-08',
+      category: 'others',
+    },
+    // Notes
+    {
+      id: 'note-1',
+      name: 'Study Notes for Exam',
+      type: 'NOTE',
+      size: '245 chars',
+      uploadDate: '2024-01-15',
+      category: 'notes',
+      content: 'Important points for upcoming exam:\n\n1. Review chapter 5-8\n2. Practice problems from page 120-150\n3. Focus on algorithms and data structures\n4. Prepare for coding questions\n\nRemember to get enough sleep before the exam!',
+    },
+    {
+      id: 'note-2',
+      name: 'Meeting Notes - Project Alpha',
+      type: 'NOTE',
+      size: '312 chars',
+      uploadDate: '2024-01-14',
+      category: 'notes',
+      content: 'Project Alpha Meeting Notes:\n\nAttendees: John, Sarah, Mike\nDate: Jan 14, 2024\n\nKey Points:\n- Deadline moved to Feb 15\n- Need to implement user authentication\n- Database migration scheduled for next week\n- UI/UX review on Friday\n\nAction Items:\n- John: Complete API documentation\n- Sarah: Finalize design mockups\n- Mike: Set up testing environment',
+    },
+    {
+      id: 'note-3',
+      name: 'Book Summary - Clean Code',
+      type: 'NOTE',
+      size: '428 chars',
+      uploadDate: '2024-01-13',
+      category: 'notes',
+      content: 'Clean Code by Robert C. Martin - Key Takeaways:\n\n1. Meaningful Names:\n   - Use intention-revealing names\n   - Avoid disinformation\n   - Make meaningful distinctions\n\n2. Functions:\n   - Small functions\n   - Do one thing\n   - Use descriptive names\n\n3. Comments:\n   - Good code is self-documenting\n   - Explain why, not what\n   - Keep comments up to date\n\n4. Formatting:\n   - Consistent indentation\n   - Logical organization\n   - Team coding standards',
+    },
+    {
+      id: 'note-4',
+      name: 'Recipe Ideas',
+      type: 'NOTE',
+      size: '189 chars',
+      uploadDate: '2024-01-12',
+      category: 'notes',
+      content: 'Healthy Recipe Ideas:\n\n🥗 Quinoa Buddha Bowl\n- Quinoa, roasted vegetables, avocado\n- Tahini dressing\n\n🍲 Lentil Curry\n- Red lentils, coconut milk, spices\n- Serve with brown rice\n\n🥙 Mediterranean Wrap\n- Hummus, cucumber, tomato, feta\n- Whole wheat tortilla',
     },
   ];
 
@@ -126,11 +197,19 @@ export default function DocumentCategoriesScreen() {
       count: documents.filter(doc => doc.category === 'govt-proof').length,
     },
     {
-      id: 'others',
-      name: 'Others',
-      icon: <Archive size={32} color="#10B981" />,
+      id: 'notes',
+      name: 'Notes',
+      icon: <StickyNote size={32} color="#10B981" />,
       color: '#10B981',
       backgroundColor: '#ECFDF5',
+      count: documents.filter(doc => doc.category === 'notes').length,
+    },
+    {
+      id: 'others',
+      name: 'Others',
+      icon: <Archive size={32} color="#6B7280" />,
+      color: '#6B7280',
+      backgroundColor: '#F3F4F6',
       count: documents.filter(doc => doc.category === 'others').length,
     },
   ];
@@ -145,6 +224,32 @@ export default function DocumentCategoriesScreen() {
 
   const handleCategoryPress = (categoryId: string) => {
     setSelectedCategory(categoryId);
+  };
+
+  const handleDocumentPress = (document: Document) => {
+    if (document.category === 'notes') {
+      // Navigate to note viewer/editor
+      router.push({
+        pathname: '/feature/note-viewer',
+        params: { 
+          noteId: document.id,
+          title: document.name,
+          content: document.content || '',
+          date: document.uploadDate
+        }
+      });
+    } else {
+      // Navigate to PDF viewer
+      router.push({
+        pathname: '/feature/pdf-viewer',
+        params: { 
+          documentId: document.id,
+          title: document.name,
+          type: document.type,
+          size: document.size
+        }
+      });
+    }
   };
 
   const filteredDocuments = selectedCategory
@@ -163,23 +268,35 @@ export default function DocumentCategoriesScreen() {
       </View>
       <Text style={styles.categoryName}>{item.name}</Text>
       <Text style={styles.categoryCount}>
-        {item.count} {item.count === 1 ? 'document' : 'documents'}
+        {item.count} {item.count === 1 ? 'item' : 'items'}
       </Text>
     </TouchableOpacity>
   );
 
   const renderDocumentItem = ({ item }: { item: Document }) => (
-    <View style={styles.documentItem}>
+    <TouchableOpacity 
+      style={styles.documentItem}
+      onPress={() => handleDocumentPress(item)}
+    >
       <View style={styles.documentIcon}>
-        <File size={24} color="#8B5CF6" />
+        {item.category === 'notes' ? (
+          <FileText size={24} color="#10B981" />
+        ) : (
+          <File size={24} color="#8B5CF6" />
+        )}
       </View>
       <View style={styles.documentInfo}>
         <Text style={styles.documentName}>{item.name}</Text>
         <Text style={styles.documentDetails}>
           {item.type} • {item.size} • {new Date(item.uploadDate).toLocaleDateString()}
         </Text>
+        {item.category === 'notes' && item.content && (
+          <Text style={styles.documentPreview} numberOfLines={2}>
+            {item.content}
+          </Text>
+        )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (selectedCategory) {
@@ -200,7 +317,7 @@ export default function DocumentCategoriesScreen() {
             </View>
             <Text style={styles.categoryHeaderTitle}>{selectedCategoryData?.name}</Text>
             <Text style={styles.categoryHeaderCount}>
-              {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
+              {filteredDocuments.length} {filteredDocuments.length === 1 ? 'item' : 'items'}
             </Text>
           </View>
 
@@ -215,9 +332,9 @@ export default function DocumentCategoriesScreen() {
           ) : (
             <View style={styles.emptyState}>
               <Archive size={48} color="#9CA3AF" />
-              <Text style={styles.emptyStateTitle}>No documents found</Text>
+              <Text style={styles.emptyStateTitle}>No items found</Text>
               <Text style={styles.emptyStateText}>
-                You haven't uploaded any documents in this category yet.
+                You haven't added any items in this category yet.
               </Text>
             </View>
           )}
@@ -240,7 +357,7 @@ export default function DocumentCategoriesScreen() {
         <View style={styles.titleSection}>
           <Text style={styles.sectionTitle}>Browse by Category</Text>
           <Text style={styles.sectionSubtitle}>
-            Organize your documents by type for easy access
+            Organize your documents and notes by type for easy access
           </Text>
         </View>
 
@@ -259,13 +376,19 @@ export default function DocumentCategoriesScreen() {
           <View style={styles.statsGrid}>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>{documents.length}</Text>
-              <Text style={styles.statLabel}>Total Documents</Text>
+              <Text style={styles.statLabel}>Total Items</Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>
-                {(documents.reduce((acc, doc) => acc + parseFloat(doc.size), 0)).toFixed(1)} MB
+                {documents.filter(doc => doc.category !== 'notes').length}
               </Text>
-              <Text style={styles.statLabel}>Storage Used</Text>
+              <Text style={styles.statLabel}>Documents</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>
+                {documents.filter(doc => doc.category === 'notes').length}
+              </Text>
+              <Text style={styles.statLabel}>Notes</Text>
             </View>
           </View>
         </View>
@@ -402,7 +525,7 @@ const styles = StyleSheet.create({
   },
   documentItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
@@ -420,6 +543,7 @@ const styles = StyleSheet.create({
   },
   documentIcon: {
     marginRight: 16,
+    marginTop: 2,
   },
   documentInfo: {
     flex: 1,
@@ -434,6 +558,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
+    marginBottom: 4,
+  },
+  documentPreview: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#4B5563',
+    lineHeight: 18,
+    marginTop: 4,
   },
   emptyState: {
     alignItems: 'center',

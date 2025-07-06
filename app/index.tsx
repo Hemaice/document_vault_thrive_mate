@@ -64,8 +64,8 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
-                selectionColor="#8B5CF6"
-                cursorColor="#8B5CF6"
+                selectionColor="transparent"
+                cursorColor="transparent"
               />
             </View>
           </View>
@@ -81,8 +81,8 @@ export default function LoginScreen() {
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
                 autoComplete="password"
-                selectionColor="#8B5CF6"
-                cursorColor="#8B5CF6"
+                selectionColor="transparent"
+                cursorColor="transparent"
               />
               <TouchableOpacity
                 style={styles.eyeIcon}

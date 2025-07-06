@@ -20,8 +20,9 @@ interface Document {
   type: string;
   size: string;
   uploadDate: string;
-  category: 'academic' | 'certificates' | 'govt-proof' | 'others';
+  category: 'academic' | 'certificates' | 'govt-proof' | 'others' | 'notes';
   uri?: string;
+  content?: string; // For notes
 }
 
 interface Note {
@@ -115,7 +116,31 @@ export default function DocumentVaultScreen() {
 
   const handleViewDocument = () => {
     setShowOptionsModal(false);
-    setShowPDFViewer(true);
+    if (selectedDocument) {
+      if (selectedDocument.category === 'notes') {
+        // Navigate to note viewer
+        router.push({
+          pathname: '/feature/note-viewer',
+          params: { 
+            noteId: selectedDocument.id,
+            title: selectedDocument.name,
+            content: selectedDocument.content || '',
+            date: selectedDocument.uploadDate
+          }
+        });
+      } else {
+        // Navigate to PDF viewer
+        router.push({
+          pathname: '/feature/pdf-viewer',
+          params: { 
+            documentId: selectedDocument.id,
+            title: selectedDocument.name,
+            type: selectedDocument.type,
+            size: selectedDocument.size
+          }
+        });
+      }
+    }
   };
 
   const handleDeleteDocument = () => {
@@ -166,7 +191,19 @@ export default function DocumentVaultScreen() {
       createdDate: new Date().toISOString().split('T')[0],
     };
 
+    // Add note to documents list as well for unified display
+    const newDocument: Document = {
+      id: `note-${newNote.id}`,
+      name: newNote.title,
+      type: 'NOTE',
+      size: `${newNote.content.length} chars`,
+      uploadDate: newNote.createdDate,
+      category: 'notes',
+      content: newNote.content,
+    };
+
     setNotes(prev => [newNote, ...prev]);
+    setDocuments(prev => [newDocument, ...prev]);
     setNoteTitle('');
     setNoteContent('');
     setShowCreateNote(false);
@@ -178,25 +215,34 @@ export default function DocumentVaultScreen() {
   );
 
   const recentActivity = [...documents, ...notes.map(note => ({
-    ...note,
-    id: `note-${note.id}`, // Prefix note IDs to ensure uniqueness
+    id: `note-${note.id}`,
     name: note.title,
     type: 'NOTE',
     size: `${note.content.length} chars`,
     uploadDate: note.createdDate,
-    category: 'others' as const,
+    category: 'notes' as const,
+    content: note.content,
   }))].sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()).slice(0, 5);
 
   const renderDocumentItem = ({ item }: { item: Document }) => (
     <View style={styles.documentItem}>
       <View style={styles.documentIcon}>
-        <File size={24} color="#8B5CF6" />
+        {item.category === 'notes' ? (
+          <FileText size={24} color="#10B981" />
+        ) : (
+          <File size={24} color="#8B5CF6" />
+        )}
       </View>
       <View style={styles.documentInfo}>
         <Text style={styles.documentName}>{item.name}</Text>
         <Text style={styles.documentDetails}>
           {item.type} • {item.size} • {new Date(item.uploadDate).toLocaleDateString()}
         </Text>
+        {item.category === 'notes' && item.content && (
+          <Text style={styles.documentPreview} numberOfLines={2}>
+            {item.content}
+          </Text>
+        )}
       </View>
       <TouchableOpacity
         style={styles.optionsButton}
@@ -228,6 +274,8 @@ export default function DocumentVaultScreen() {
               placeholderTextColor="#9CA3AF"
               value={searchQuery}
               onChangeText={setSearchQuery}
+              selectionColor="transparent"
+              cursorColor="transparent"
             />
           </View>
         </View>
@@ -313,32 +361,6 @@ export default function DocumentVaultScreen() {
         </View>
       </Modal>
 
-      {/* PDF Viewer Modal */}
-      <Modal
-        visible={showPDFViewer}
-        animationType="slide"
-        onRequestClose={() => setShowPDFViewer(false)}
-      >
-        <View style={styles.pdfViewerContainer}>
-          <View style={styles.pdfHeader}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowPDFViewer(false)}
-            >
-              <ArrowLeft size={24} color="#4F46E5" />
-            </TouchableOpacity>
-            <Text style={styles.pdfTitle}>{selectedDocument?.name}</Text>
-            <View style={styles.headerSpacer} />
-          </View>
-          <View style={styles.pdfContent}>
-            <Text style={styles.pdfPlaceholder}>
-              PDF Viewer would be implemented here{'\n'}
-              Document: {selectedDocument?.name}
-            </Text>
-          </View>
-        </View>
-      </Modal>
-
       {/* Create Note Modal */}
       <Modal
         visible={showCreateNote}
@@ -368,6 +390,8 @@ export default function DocumentVaultScreen() {
                 placeholderTextColor="#9CA3AF"
                 value={noteTitle}
                 onChangeText={setNoteTitle}
+                selectionColor="transparent"
+                cursorColor="transparent"
               />
             </View>
             
@@ -382,6 +406,8 @@ export default function DocumentVaultScreen() {
                 multiline={true}
                 numberOfLines={15}
                 textAlignVertical="top"
+                selectionColor="transparent"
+                cursorColor="transparent"
               />
             </View>
           </ScrollView>
@@ -486,7 +512,7 @@ const styles = StyleSheet.create({
   },
   documentItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
@@ -504,6 +530,7 @@ const styles = StyleSheet.create({
   },
   documentIcon: {
     marginRight: 16,
+    marginTop: 2,
   },
   documentInfo: {
     flex: 1,
@@ -518,6 +545,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
+    marginBottom: 4,
+  },
+  documentPreview: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#4B5563',
+    lineHeight: 18,
+    marginTop: 4,
   },
   optionsButton: {
     padding: 8,
@@ -620,44 +655,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#6B7280',
   },
-  pdfViewerContainer: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  pdfHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  closeButton: {
-    padding: 8,
-  },
-  pdfTitle: {
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#1F2937',
-    flex: 1,
-    textAlign: 'center',
-  },
-  pdfContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-  },
-  pdfPlaceholder: {
-    fontSize: 16,
-    fontFamily: 'Inter-Regular',
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 24,
-  },
   createNoteContainer: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -690,6 +687,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
     color: '#FFFFFF',
+  },
+  closeButton: {
+    padding: 8,
   },
   createNoteContent: {
     flex: 1,
